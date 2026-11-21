@@ -9,6 +9,8 @@ QUÉ HAY EN ESTA CARPETA
 
 CÓMO EDITAR (abre index.html con el Bloc de notas o VS Code)
   Busca "CONFIGURACIÓN" casi al final del archivo:
+  • NOCTIS está A LA VENTA (status: "available"). Para volver a "Próximamente":
+      status: "available"  ->  status: "soon"
   • checkout: "" -> pega entre las comillas el link de compra de Polar de NOCTIS.
   • price: "US$20" -> cambia el precio si lo subes o bajas.
   • status: "soon" -> cuando ReesFlow salga a la venta, cámbialo a "available"
