@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-noctis="soon">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FlowEazy · Don't drop the beat · Plugins for urban producers</title>
+<meta name="description" content="FlowEazy: plugins that get you unstuck when the melody won't come. NOCTIS (chords & arpeggios), ReesFlow (basses) and more for reggaeton, trap, afro and urban beats.">
+<meta property="og:title" content="FlowEazy · Don't drop the beat">
+<meta property="og:description" content="Plugins that get you unstuck and help you build beats that sound pro.">
+<meta property="og:image" content="img/noctis-plugin.jpg">
+<link rel="icon" type="image/svg+xml" href="img/floweazy-icon.svg">
+<link rel="icon" type="image/png" href="img/floweazy-icon.png">
+<link rel="apple-touch-icon" href="img/floweazy-icon.png">
+<script>
+  /* Tema claro/oscuro: se aplica antes de pintar para que no parpadee */
+  (function(){
+    var t = null;
+    try { t = localStorage.getItem("floweazy-theme"); } catch(e) {}
+    if (!t) t = (window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", t);
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* Fuente de la marca: Outfit (gratis, licencia SIL OFL — ver carpeta fonts/) */
+  @font-face{font-family:"Outfit";src:url("fonts/outfit-500.woff2") format("woff2");font-weight:500;font-display:swap}
+  @font-face{font-family:"Outfit";src:url("fonts/outfit-600.woff2") format("woff2");font-weight:600;font-display:swap}
+  @font-face{font-family:"Outfit";src:url("fonts/outfit-700.woff2") format("woff2");font-weight:700;font-display:swap}
+  @font-face{font-family:"Outfit";src:url("fonts/outfit-800.woff2") format("woff2");font-weight:800;font-display:swap}
+
+  /* =====================================================================
+     PALETA DE COLORES — cambia aquí los colores de cada modo
+     ===================================================================== */
+  :root{
+    --accent:#f7761f;          /* naranja principal */
+    --accent-dark:#d85f0c;
+    --violet:#6d4cf0;          /* ReesFlow */
+    --r:30px;                  /* redondeo de las tarjetas */
+    --fluid-cool:
+      radial-gradient(55% 75% at 20% 30%, #6d4cf0 0, rgba(109,76,240,0) 62%),
+      radial-gradient(50% 70% at 80% 70%, #2c4f7c 0, rgba(44,79,124,0) 65%),
+      radial-gradient(35% 50% at 70% 15%, #f7761f 0, rgba(247,118,31,0) 60%),
+      #0b0b12;
+  }
+  [data-theme="light"]{
+    --bg:#f5f5f5; --card:#e9e9e9; --card2:#ffffff; --studio:linear-gradient(165deg,#f7f7f7 0%,#dedede 100%);
+    --ink:#121212; --soft:#6a6a6a; --line:rgba(0,0,0,.1);
+    --solid:#121212; --solid-ink:#ffffff;
+    --shadow:0 3px 0 rgba(0,0,0,.05),0 22px 40px rgba(0,0,0,.09);
+    --nav:rgba(245,245,245,.82);
+  }
+  [data-theme="dark"]{
+    --bg:#0e0e0f; --card:#1b1b1d; --card2:#232326; --studio:linear-gradient(165deg,#2b2b2e 0%,#151517 100%);
+    --ink:#ffffff; --soft:#b3b3b9; --line:rgba(255,255,255,.1);
+    --solid:#ffffff; --solid-ink:#121212;
+    --shadow:0 3px 0 rgba(0,0,0,.4),0 22px 40px rgba(0,0,0,.45);
+    --nav:rgba(14,14,15,.8);
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Inter",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden;transition:background .35s,color .35s}
+  a{color:inherit}
+  img{max-width:100%;display:block}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+  .o{font-family:"Outfit","Inter",system-ui,sans-serif}
+  h1,h2,h3,h4{font-family:"Outfit","Inter",system-ui,sans-serif;letter-spacing:-.02em}
+  .cap{font:600 11.5px/1 "Outfit","Inter",sans-serif;letter-spacing:.08em;text-transform:uppercase}
+
+  /* Tarjeta base */
+  .card{border-radius:var(--r);background:var(--card);box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .studio{background:var(--studio)}
+  .orange{background:var(--accent);color:#fff}
+  .black{background:#121212;color:#fff}
+  [data-theme="dark"] .black{background:#000;box-shadow:0 0 0 1px rgba(255,255,255,.08),var(--shadow)}
+
+  /* Pastillas y flechas */
+  .tag{display:inline-flex;align-items:center;padding:6px 11px;border-radius:99px;border:1.5px solid currentColor;opacity:.85}
+  .arrow{width:40px;height:40px;border-radius:50%;display:inline-grid;place-items:center;flex:none;text-decoration:none;
+         background:var(--card2);color:var(--ink);box-shadow:0 4px 12px rgba(0,0,0,.12);transition:transform .2s}
+  .arrow:hover{transform:rotate(-45deg)}
+  .arrow svg{width:16px;height:16px}
+  .arrow.dark{background:#121212;color:#fff}
+  .arrow.org{background:var(--accent);color:#fff}
+  .arrow.big{width:58px;height:58px}
+  .arrow.big svg{width:20px;height:20px}
+
+  /* Botones */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font:700 14px "Outfit","Inter",sans-serif;letter-spacing:.06em;text-transform:uppercase;
+       text-decoration:none;cursor:pointer;border:0;padding:15px 26px;border-radius:99px;white-space:nowrap;transition:transform .15s}
+  .btn:hover{transform:translateY(-2px)}
+  .btn-solid{background:var(--solid);color:var(--solid-ink);box-shadow:0 8px 18px rgba(0,0,0,.18)}
+  .btn-org{background:var(--accent);color:#fff;box-shadow:0 10px 22px rgba(247,118,31,.35)}
+  .btn-soft{background:var(--card);color:var(--ink);box-shadow:0 3px 0 var(--line)}
+  .btn-sm{padding:11px 18px;font-size:12.5px}
+
+  /* Mostrar/ocultar según NOCTIS esté a la venta o "próximamente" */
+  [data-noctis="soon"] .if-av{display:none !important}
+  [data-noctis="available"] .if-soon{display:none !important}
+
+  /* ---------- MENÚ ---------- */
+  nav{position:sticky;top:0;z-index:40;background:var(--nav);backdrop-filter:blur(14px)}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:78px;gap:18px}
+  .brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+  .brand img{width:34px;height:34px;border-radius:11px}
+  [data-theme="dark"] .brand img{box-shadow:0 0 0 1px rgba(255,255,255,.14)}
+  .wordmark{font:800 32px/1 "Outfit","Inter",sans-serif;letter-spacing:-.035em;color:var(--accent)}
+  .wordmark b{color:var(--ink);font-weight:800}
+  .links{display:flex;align-items:center;gap:24px}
+  .links > a{text-decoration:none;color:var(--ink);opacity:.8}
+  .links > a:hover{opacity:1}
+  .tools{display:flex;align-items:center;gap:12px}
+  .lang{display:inline-flex;border-radius:99px;padding:3px;background:var(--card)}
+  .lang button{border:0;background:transparent;font:700 11.5px "Outfit","Inter",sans-serif;letter-spacing:.06em;color:var(--soft);padding:6px 11px;border-radius:99px;cursor:pointer}
+  .lang button.on{background:var(--solid);color:var(--solid-ink)}
+  .burger{display:none;width:36px;height:36px;border:0;background:transparent;cursor:pointer;position:relative}
+  .burger::before,.burger::after{content:"";position:absolute;right:4px;height:4px;border-radius:4px;background:var(--accent)}
+  .burger::before{top:11px;width:28px}
+  .burger::after{top:20px;width:18px}
+
+  /* Interruptor sol / luna */
+  .theme{position:relative;width:62px;height:30px;border:0;border-radius:99px;cursor:pointer;overflow:hidden;flex:none;
+         background:linear-gradient(90deg,#3a8ee6,#86c6f7);box-shadow:inset 0 2px 5px rgba(0,0,0,.28);transition:background .4s}
+  .theme::before{content:"";position:absolute;inset:0;opacity:0;transition:opacity .4s;
+         background:radial-gradient(1.2px 1.2px at 12px 9px,#fff 98%,transparent),radial-gradient(1px 1px at 22px 20px,#fff 98%,transparent),
+                    radial-gradient(1.4px 1.4px at 9px 21px,#fff 98%,transparent),radial-gradient(1px 1px at 29px 8px,#fff 98%,transparent)}
+  .theme::after{content:"";position:absolute;inset:0;transition:opacity .4s,transform .4s;
+         background:radial-gradient(circle at 42px 28px,#fff 9px,transparent 9.5px),radial-gradient(circle at 54px 23px,#fff 10px,transparent 10.5px),
+                    radial-gradient(circle at 32px 32px,#e8f4ff 8px,transparent 8.5px)}
+  .theme .orb{position:absolute;top:4px;left:4px;width:22px;height:22px;border-radius:50%;background:#ffd23a;
+         box-shadow:inset 0 -2px 0 rgba(0,0,0,.12),0 2px 6px rgba(0,0,0,.3);transition:transform .45s cubic-bezier(.6,-.2,.3,1.3),background .4s}
+  [data-theme="dark"] .theme{background:linear-gradient(90deg,#1a1d27,#3a3d47)}
+  [data-theme="dark"] .theme::before{opacity:1}
+  [data-theme="dark"] .theme::after{opacity:0;transform:translateX(14px)}
+  [data-theme="dark"] .theme .orb{transform:translateX(32px);
+         background:radial-gradient(circle at 7px 8px,#a9adb8 3px,transparent 3.5px),radial-gradient(circle at 15px 15px,#a9adb8 2.5px,transparent 3px),#dcdfe5}
+
+  /* ---------- INICIO: bento ---------- */
+  .bento{display:grid;grid-template-columns:1.6fr 1fr .85fr;gap:22px;margin-top:14px}
+  .bento > *{min-width:0}
+  .hero-main{min-height:440px;display:grid;grid-template-columns:.95fr 1.05fr;align-items:end}
+  .hero-main .fig{align-self:end;height:100%;display:flex;align-items:flex-end;justify-content:center;padding-top:20px}
+  .hero-main .fig img{height:410px;width:auto;object-fit:contain;filter:drop-shadow(0 26px 22px rgba(0,0,0,.28));margin-bottom:-6px}
+  .hero-main .txt{align-self:center;padding:34px 34px 34px 0;text-align:right}
+  .hero-main h1{font-size:clamp(36px,3.9vw,52px);line-height:.98;font-weight:700;letter-spacing:-.035em}
+  .hero-main h1 em{font-style:normal;color:var(--accent)}
+  .hero-main p{font-size:14.5px;color:var(--soft);margin-top:14px}
+  .hero-main .go{position:absolute;right:30px;bottom:28px;display:flex;align-items:center;gap:12px;text-decoration:none}
+
+  .hero-mid{min-height:440px;display:flex;flex-direction:column}
+  .hero-mid .pic{height:52%;min-height:200px;overflow:hidden}
+  .hero-mid .pic img{width:100%;height:100%;object-fit:cover;object-position:top left}
+  .hero-mid .panel{flex:1;margin-top:-34px;position:relative;z-index:1;background:var(--card2);border-radius:var(--r);padding:22px 22px 20px;
+                   display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:end;box-shadow:0 -8px 24px rgba(0,0,0,.06)}
+  .hero-mid .panel img{width:78px;filter:drop-shadow(0 12px 10px rgba(0,0,0,.25))}
+  .hero-mid .panel .t{text-align:right}
+  .hero-mid h3{font-size:21px;line-height:1.1;font-weight:700}
+  .hero-mid small{display:block;color:var(--soft);font-size:12.5px;margin-top:6px}
+  .hero-mid .arrow{position:absolute;right:18px;bottom:16px}
+  .hero-mid .t{padding-bottom:44px}
+
+  .poster{min-height:440px;background:var(--fluid-cool);color:#fff;padding:22px;display:flex;flex-direction:column;text-decoration:none}
+  .poster .row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+  .poster .mini{font:700 10.5px/1.25 "Outfit",sans-serif;letter-spacing:.06em;text-transform:uppercase;opacity:.85;text-align:right}
+  .poster .name{font:800 clamp(46px,4.6vw,62px)/.86 "Outfit",sans-serif;letter-spacing:-.04em;margin-top:22px}
+  .poster .name span{color:var(--accent);display:block}
+  .poster svg{margin-top:auto;width:100%;height:auto}
+  .poster .foot{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+
+  /* fila de números */
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:22px}
+  .stat{min-height:160px;padding:20px 22px;display:flex;flex-direction:column;justify-content:space-between}
+  .stat .top{display:flex;justify-content:space-between;align-items:flex-start}
+  .stat .bot{display:flex;justify-content:space-between;align-items:flex-end;gap:14px}
+  .stat .bot p{font-size:13px;line-height:1.3;max-width:170px;font-weight:500}
+  .stat .num{font:800 clamp(48px,5vw,68px)/.85 "Outfit",sans-serif;letter-spacing:-.04em}
+  .stat.orange .tag{color:#fff}
+  .chips-cloud{position:relative;min-height:160px}
+  .chips-cloud .arrow{position:absolute;left:18px;top:16px}
+  .chips-cloud span{position:absolute;font:700 11px/1 "Outfit",sans-serif;letter-spacing:.05em;text-transform:uppercase;
+       padding:8px 13px;border-radius:99px;background:var(--card2);box-shadow:0 3px 0 var(--line),0 6px 14px rgba(0,0,0,.06);white-space:nowrap}
+
+  /* marca grande completa */
+  .bigmark{padding:70px 0 10px;text-align:center}
+  .bigmark .w{font:800 clamp(64px,16.5vw,220px)/.95 "Outfit",sans-serif;letter-spacing:-.045em}
+  .bigmark .w span{color:var(--accent)}
+  .bigmark p{color:var(--soft);font:600 13px "Outfit",sans-serif;letter-spacing:.3em;text-transform:uppercase;margin-top:8px}
+
+  /* ---------- POR QUÉ (collage) ---------- */
+  .why{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;padding-top:90px;padding-bottom:90px}
+  .collage{display:grid;grid-template-columns:1fr 1fr;gap:16px;position:relative}
+  .collage > div{display:flex;flex-direction:column;gap:16px}
+  .leaf{overflow:hidden;position:relative;box-shadow:var(--shadow)}
+  .leaf.a{border-radius:120px 18px 120px 18px}
+  .leaf.b{border-radius:18px 120px 18px 120px}
+  .leaf.c{border-radius:120px 120px 18px 120px}
+  .leaf.pic{height:300px;background:var(--studio)}
+  .leaf.pic img{width:100%;height:100%;object-fit:cover}
+  .leaf.robo img{object-fit:contain;object-position:center 20px;transform:scale(1.25);transform-origin:top}
+  .leaf.msg{height:130px;padding:26px 30px;display:flex;align-items:flex-end;font:700 14px/1.2 "Outfit",sans-serif;letter-spacing:.06em;text-transform:uppercase}
+  .leaf.msg::before{content:"";position:absolute;left:30px;top:30px;width:6px;height:6px;border-radius:50%;background:var(--accent)}
+  .vert{height:420px;display:flex;align-items:flex-start;justify-content:center;padding-top:26px;border-radius:18px 120px 18px 18px}
+  .vert span{writing-mode:vertical-rl;transform:rotate(180deg);font:800 52px/1 "Outfit",sans-serif;letter-spacing:-.02em;color:#fff}
+  .ring{width:210px;height:210px;border-radius:50%;margin:-90px auto 0;position:relative;z-index:2;background:var(--card2);
+        box-shadow:0 0 0 10px var(--bg),0 0 0 11.5px var(--ink),var(--shadow);display:grid;place-items:center;overflow:hidden}
+  .ring img{width:70%;transform:translateY(16px)}
+  .stem{width:1.5px;height:80px;background:var(--ink);margin:12px auto 0;position:relative}
+  .stem::after{content:"";position:absolute;bottom:-3px;left:-3px;width:7.5px;height:7.5px;border-radius:50%;background:var(--ink)}
+  .stemcap{text-align:center;font:600 13px/1.3 "Outfit",sans-serif;margin-top:12px}
+
+  .why-txt h2{font-size:clamp(42px,5.2vw,72px);line-height:1;font-weight:700;letter-spacing:-.04em;text-align:center}
+  .why-txt h2 em{font-style:normal;color:var(--accent)}
+  .why-txt .lead{color:var(--soft);font-size:16px;text-align:center;max-width:470px;margin:20px auto 0}
+  .why-txt .acts{display:flex;justify-content:center;align-items:center;gap:14px;margin:30px 0 44px;flex-wrap:wrap}
+  .list{border-top:2px solid var(--ink)}
+  .list a{display:grid;grid-template-columns:60px 1fr auto;align-items:center;gap:16px;padding:16px 6px;border-bottom:2px solid var(--ink);text-decoration:none}
+  .list .n{font:700 26px "Outfit",sans-serif}
+  .list b{font:600 16px "Outfit",sans-serif}
+  .list small{display:block;color:var(--soft);font-size:13px}
+  .list i{font:600 14px "Outfit",sans-serif;font-style:normal;color:var(--soft)}
+
+  /* ---------- SECCIONES ---------- */
+  section{padding:80px 0}
+  .head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:36px}
+  .kicker{display:inline-flex;align-items:center;gap:8px;color:var(--accent);margin-bottom:12px}
+  .kicker::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+  h2{font-size:clamp(34px,4.4vw,58px);line-height:1;font-weight:700;letter-spacing:-.04em}
+  h2 .dim{color:var(--soft);opacity:.7}
+  .sub{color:var(--soft);font-size:16.5px;max-width:520px}
+
+  /* ---------- CATÁLOGO ---------- */
+  .catalog{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .prod{min-height:470px;display:flex;flex-direction:column}
+  .prod .pic{height:230px;flex:none;overflow:hidden;position:relative}
+  .prod .pic img{width:100%;height:100%;object-fit:cover;object-position:top left}
+  .prod .pic.cool{background:var(--fluid-cool);display:flex;align-items:center;padding:20px 26px}
+  .prod .pic.empty{background:var(--studio);display:grid;place-items:center}
+  .prod .pic.empty b{font:800 120px/1 "Outfit",sans-serif;color:var(--accent);opacity:.9}
+  .prod .panel{flex:1;margin-top:-30px;position:relative;z-index:1;background:var(--card2);border-radius:var(--r);padding:22px 22px 22px;display:flex;flex-direction:column;gap:8px}
+  .prod .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .prod .state{display:inline-flex;align-items:center;gap:7px;color:var(--soft)}
+  .prod .state i{width:7px;height:7px;border-radius:50%;background:var(--accent)}
+  .prod .state.ok i{background:#2fbf71;box-shadow:0 0 6px #2fbf71}
+  .prod h3{font-size:28px;font-weight:800;letter-spacing:-.03em;line-height:1;margin-top:4px}
+  .prod .type{color:var(--accent)}
+  .prod p{color:var(--soft);font-size:14.5px;line-height:1.5}
+  .prod .foot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:6px}
+  .prod .price{font:800 26px "Outfit",sans-serif;letter-spacing:-.03em}
+  .prod .acts{display:flex;gap:8px}
+
+  /* ---------- NOCTIS ---------- */
+  .phead{display:flex;align-items:center;gap:16px}
+  .phead img{width:62px;height:62px;border-radius:18px;box-shadow:0 10px 22px rgba(0,0,0,.25)}
+  .shot{padding:34px}
+  .shot img{width:100%;max-width:880px;margin:0 auto;border-radius:22px;box-shadow:0 30px 60px rgba(0,0,0,.25)}
+  .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:22px}
+  .tile{min-height:230px;padding:22px;display:flex;flex-direction:column;justify-content:space-between;gap:24px}
+  .tile .top{display:flex;justify-content:space-between;align-items:center}
+  .tile h3{font-size:21px;font-weight:700;line-height:1.15;margin-bottom:6px}
+  .tile p{font-size:14.5px;line-height:1.5;opacity:.75}
+  .tile.light{background:var(--card2)}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:56px}
+  .step{border-top:2px solid var(--ink);padding-top:16px}
+  .step .n{font:800 34px/1 "Outfit",sans-serif;color:var(--accent)}
+  .step h3{font-size:20px;font-weight:700;margin:10px 0 4px}
+  .step p{color:var(--soft);font-size:15px}
+  .genre-groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px 30px;margin-top:56px}
+  .genre-group h4{color:var(--soft);margin-bottom:10px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chips span{background:var(--card2);border-radius:99px;padding:8px 15px;font:600 13.5px "Outfit",sans-serif;box-shadow:0 3px 0 var(--line)}
+  .buy{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:70px}
+  .buy .art{min-height:460px;display:grid;place-items:end center}
+  .buy .art img{height:420px;width:auto;filter:drop-shadow(0 26px 22px rgba(0,0,0,.3))}
+  .buy .art .tag{position:absolute;left:22px;top:22px}
+  .price-box{padding:36px;background:var(--card2);display:flex;flex-direction:column}
+  .price-box .big{font:800 72px/1 "Outfit",sans-serif;letter-spacing:-.05em;margin-top:6px}
+  .price-box .old{color:var(--soft);text-decoration:line-through;font-size:26px;margin-left:10px}
+  .incl{list-style:none;margin:22px 0 26px}
+  .incl li{padding:11px 0 11px 24px;border-bottom:1px solid var(--line);position:relative;font-size:15px}
+  .incl li::before{content:"";position:absolute;left:2px;top:19px;width:8px;height:8px;border-radius:50%;background:var(--accent)}
+  .pay{margin-top:12px;font-size:13px;color:var(--soft)}
+
+  /* ---------- REESFLOW ---------- */
+  .rf{background:var(--fluid-cool);color:#fff;padding:54px 50px;display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center}
+  .rf > div{min-width:0;position:relative}
+  .rf .kicker{color:#c9b8ff}
+  .rf .sub{color:rgba(255,255,255,.75)}
+  .rf ul{list-style:none;margin:24px 0 28px}
+  .rf li{padding:10px 0 10px 24px;border-bottom:1px solid rgba(255,255,255,.14);position:relative;font-size:15px;color:rgba(255,255,255,.9)}
+  .rf li::before{content:"";position:absolute;left:2px;top:18px;width:8px;height:8px;border-radius:50%;background:#c9b8ff}
+  .rf .scr{border-radius:24px;padding:20px 22px;background:rgba(10,10,14,.45);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(16px)}
+  .rf .scr .top{display:flex;justify-content:space-between;opacity:.65}
+  .rf .scr b{display:block;font:800 40px/1 "Outfit",sans-serif;letter-spacing:-.03em;margin:12px 0 4px}
+  .rf .scr svg{width:100%;height:auto;margin-top:8px}
+  .rf .chips{margin-top:16px}
+  .rf .chips span{background:rgba(255,255,255,.1);color:#fff;box-shadow:none;border:1px solid rgba(255,255,255,.2)}
+  .btn-white{background:#fff;color:#121212}
+
+  /* ---------- SOPORTE ---------- */
+  .faq{max-width:840px;margin:0 auto}
+  details{border-bottom:2px solid var(--ink);padding:20px 4px}
+  details:first-child{border-top:2px solid var(--ink)}
+  summary{cursor:pointer;font:600 18px "Outfit",sans-serif;list-style:none;display:flex;justify-content:space-between;gap:16px;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"+";flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;font:500 22px "Outfit",sans-serif;transition:transform .25s}
+  details[open] summary::after{transform:rotate(45deg)}
+  details p{color:var(--soft);margin-top:10px;max-width:700px}
+  .contact{max-width:840px;margin:34px auto 0;padding:26px 28px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+  .contact b{font:700 20px "Outfit",sans-serif}
+  .contact p{font-size:14.5px;opacity:.85}
+
+  footer{padding:30px 0 50px;color:var(--soft);font-size:14px}
+  footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:28px}
+  footer a{text-decoration:none}
+  footer a:hover{color:var(--ink)}
+
+  /* ---------- TABLET / CELULAR ---------- */
+  @media (max-width:1060px){
+    .bento{grid-template-columns:1fr 1fr}
+    .hero-main{grid-column:1 / -1}
+    .catalog{grid-template-columns:1fr 1fr}
+  }
+  @media (max-width:900px){
+    .links{display:none;position:absolute;top:78px;left:12px;right:12px;flex-direction:column;align-items:flex-start;gap:16px;
+           background:var(--card2);padding:22px;border-radius:22px;box-shadow:var(--shadow)}
+    .links.open{display:flex}
+    .burger{display:block}
+    .why{grid-template-columns:1fr;gap:50px}
+    .tiles,.steps,.buy,.rf{grid-template-columns:1fr}
+    .rf{padding:36px 24px}
+  }
+  @media (max-width:640px){
+    .wordmark{font-size:26px}
+    .brand img{display:none}
+    .bento,.stats,.catalog{grid-template-columns:1fr}
+    .hero-main{grid-template-columns:1fr;min-height:0}
+    .hero-main .txt{padding:30px 26px 0;text-align:left;order:-1}
+    .hero-main .fig img{height:300px}
+    .hero-main .go{position:relative;right:auto;bottom:auto;margin:0 26px 24px;justify-self:start}
+    .hero-mid,.poster{min-height:400px}
+    .vert span{font-size:34px}
+    .ring{width:170px;height:170px}
+    .leaf.pic{height:230px}
+    .vert{height:320px;padding-top:20px}
+    section{padding:64px 0}
+    .why{padding-top:64px;padding-bottom:64px}
+    .price-box{padding:28px 22px}
+    .buy .art{min-height:360px}
+    .buy .art img{height:330px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ======================= MENÚ ======================= -->
+<nav>
+  <div class="wrap">
+    <a href="#" class="brand" aria-label="FlowEazy">
+      <img src="img/floweazy-icon.svg" alt="">
+      <span class="wordmark"><b>flow</b>eazy</span>
+    </a>
+    <div class="links cap" id="links">
+      <a href="#plugins" data-i18n="nav_plugins">Plugins</a>
+      <a href="#noctis">NOCTIS</a>
+      <a href="#reesflow">ReesFlow</a>
+      <a href="#support" data-i18n="nav_support">Support</a>
+      <a href="#noctis-buy" class="btn btn-soft btn-sm if-av" style="opacity:1" data-i18n="nav_buy">Buy NOCTIS</a>
+      <a href="#noctis-buy" class="btn btn-soft btn-sm if-soon" style="opacity:1" data-i18n="nav_soon">NOCTIS · Coming soon</a>
+    </div>
+    <div class="tools">
+      <div class="lang" role="group" aria-label="Language"><button data-lang="en">EN</button><button data-lang="es">ES</button></div>
+      <button class="theme" id="themeBtn" aria-label="Light / dark mode"><span class="orb"></span></button>
+      <button class="burger" id="burger" aria-label="Menu"></button>
+    </div>
+  </div>
+</nav>
+
+<!-- ======================= INICIO (bento) ======================= -->
+<header class="wrap">
+  <div class="bento">
+    <div class="card studio hero-main">
+      <div class="fig"><img src="img/noctis-robot.png" alt="NOCTIS mascot"></div>
+      <div class="txt">
+        <h1 data-i18n="h1">Don't drop<br><em>the beat.</em></h1>
+        <p data-i18n="lead">Stuck looking for the melody? Our plugins hand you the idea, show you how it works and help you build beats that sound pro.</p>
+      </div>
+      <a href="#plugins" class="go"><span class="arrow big"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 17L17 7M9 7h8v8"/></svg></span><span class="cap" data-i18n="go">See the plugins</span></a>
+    </div>
+
+    <a class="card hero-mid" href="#noctis" style="text-decoration:none">
+      <div class="pic"><img src="img/noctis-plugin.jpg" alt="NOCTIS plugin"></div>
+      <div class="panel">
+        <img src="img/noctis-robot.png" alt="">
+        <div class="t">
+          <h3 data-i18n="mid_h">We give you the idea.<br>You make the beat.</h3>
+          <small class="if-av" data-i18n="mid_s">NOCTIS · chords & arpeggios · US$20</small>
+          <small class="if-soon" data-i18n="mid_s2">NOCTIS · chords & arpeggios · coming soon</small>
+        </div>
+        <span class="arrow org"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </div>
+    </a>
+
+    <a class="card poster" href="#reesflow">
+      <div class="row">
+        <span class="tag cap" data-i18n="soon">Coming soon</span>
+        <span class="mini">Reese · 808<br>Reggaeton<br>Afro · House</span>
+      </div>
+      <div class="name">REES<span>FLOW</span></div>
+      <div id="posterWave"></div>
+      <div class="foot"><span class="cap" style="opacity:.8" data-i18n="bass">Bass synth</span><span class="arrow" style="background:#fff;color:#121212"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+    </a>
+  </div>
+
+  <div class="stats">
+    <div class="card stat">
+      <div class="top"><span class="tag cap" data-i18n="st1_t">Progressions</span><span class="arrow" style="width:30px;height:30px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+      <div class="bot"><p data-i18n="st1_p">base progressions to start your next beat</p><span class="num">+140</span></div>
+    </div>
+    <div class="card stat orange">
+      <div class="top"><span class="tag cap" data-i18n="st2_t">Presets</span><span class="arrow" style="width:30px;height:30px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+      <div class="bot"><p data-i18n="st2_p">presets with their own rhythm and arpeggio, ready to go</p><span class="num">25</span></div>
+    </div>
+    <div class="card chips-cloud">
+      <span class="arrow dark" style="width:30px;height:30px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      <span style="left:24%;top:30%;transform:rotate(-14deg)">Reggaeton</span>
+      <span style="left:54%;top:18%;transform:rotate(22deg)">Perreo</span>
+      <span style="left:74%;top:40%;transform:rotate(-24deg)">Drill</span>
+      <span style="left:8%;top:62%;transform:rotate(-10deg)">Afrobeat</span>
+      <span style="left:36%;top:52%;transform:rotate(4deg)">Trap</span>
+      <span style="left:52%;top:70%;transform:rotate(-6deg)">Amapiano</span>
+      <span style="left:80%;top:72%;transform:rotate(8deg)">R&amp;B</span>
+      <span style="left:30%;top:80%;transform:rotate(12deg)">Sad</span>
+      <span style="left:62%;top:44%;transform:rotate(14deg);background:var(--accent);color:#fff">808</span>
+    </div>
+  </div>
+</header>
+
+<!-- ======================= MARCA COMPLETA ======================= -->
+<div class="bigmark wrap" aria-hidden="true">
+  <div class="w">flow<span>eazy</span></div>
+  <p>by GIANBEAT MUSIC</p>
+</div>
+
+<!-- ======================= POR QUÉ ======================= -->
+<div class="wrap why">
+  <div class="collage">
+    <div>
+      <div class="leaf a pic robo"><img src="img/noctis-robot.png" alt=""></div>
+      <div class="leaf msg black" style="border-radius:18px 120px 120px 18px" data-i18n="msg">Build your beats like a pro</div>
+      <div class="leaf c pic"><img src="img/noctis-plugin.jpg" alt="" style="object-position:left top"></div>
+    </div>
+    <div>
+      <div class="vert orange"><span>FLOWEAZY</span></div>
+      <div class="ring"><img src="img/noctis-robot.png" alt=""></div>
+      <div class="stem"></div>
+      <p class="stemcap" data-i18n="stem">Your co-pilot<br>in the studio</p>
+    </div>
+  </div>
+  <div class="why-txt">
+    <h2 data-i18n="why_h">Find the melody <em>you were looking for.</em></h2>
+    <p class="lead" data-i18n="why_p">Getting stuck is part of the road, not the end of it. Every progression shows you its chords, notes and degrees (i – VI – III – VII), so you learn the theory as you go — until you build your beats on your own.</p>
+    <div class="acts">
+      <a href="#noctis-buy" class="btn btn-solid if-av" data-i18n="why_b1">Get NOCTIS</a>
+      <a href="#" class="btn btn-solid if-soon" data-notify="noctis" data-i18n="why_b2">Notify me</a>
+      <a href="#plugins" class="arrow org big" aria-label="Plugins"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 17L17 7M9 7h8v8"/></svg></a>
+      <a href="#reesflow" class="btn btn-solid">ReesFlow</a>
+    </div>
+    <div class="list">
+      <a href="#noctis"><span class="n">01</span><span><b>NOCTIS</b><small data-i18n="l1">Chords, arpeggios, bass & melodies</small></span><i class="if-av">/US$20</i><i class="if-soon" data-i18n="l1i">/Soon</i></a>
+      <a href="#reesflow"><span class="n">02</span><span><b>ReesFlow</b><small data-i18n="l2">Reese, reggaeton, afro & house basses</small></span><i data-i18n="l2i">/Soon</i></a>
+      <a href="#plugins"><span class="n">03</span><span><b data-i18n="l3">More plugins</b><small data-i18n="l3s">New tools on the way</small></span><i data-i18n="l3i">/Next</i></a>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= CATÁLOGO ======================= -->
+<section id="plugins" style="padding-top:20px">
+  <div class="wrap">
+    <div class="head">
+      <div>
+        <p class="kicker cap" data-i18n="cat_k">The store</p>
+        <h2 data-i18n="cat_h">Plugins <span class="dim">& what's next.</span></h2>
+      </div>
+      <p class="sub" data-i18n="cat_s">One-time payment, your license by email at once and free updates.</p>
+    </div>
+    <div class="catalog" id="catalog"><!-- se llena solo con la lista PLUGINS del final --></div>
+  </div>
+</section>
+
+<!-- ======================= NOCTIS ======================= -->
+<section id="noctis">
+  <div class="wrap">
+    <div class="head">
+      <div class="phead">
+        <img src="img/noctis-icon.png" alt="NOCTIS">
+        <div>
+          <p class="kicker cap" style="margin-bottom:6px" data-i18n="n_k">Chord & arpeggio generator</p>
+          <h2>NOCTIS</h2>
+        </div>
+      </div>
+      <a href="#noctis-buy" class="btn btn-org if-av" data-i18n="n_buy_top">Buy NOCTIS</a>
+      <a href="#" class="btn btn-org if-soon" data-notify="noctis" data-i18n="n_notify_top">Notify me at launch</a>
+    </div>
+    <p class="sub" style="margin:-14px 0 30px" data-i18n="n_s">Play one note and NOCTIS gives you ready-to-use progressions, arpeggios, bass and melodies. Drag the MIDI into your Piano Roll and keep going.</p>
+
+    <div class="card studio shot"><img src="img/noctis-plugin.jpg" alt="NOCTIS plugin interface" width="920" height="750" loading="lazy"></div>
+
+    <div class="tiles">
+      <div class="card tile black"><div class="top"><span class="tag cap">01</span></div><div><h3 data-i18n="f1h">NEW VARIATION</h3><p data-i18n="f1p">One click and NOCTIS writes a new progression that fits the genre, key and mood you chose.</p></div></div>
+      <div class="card tile orange"><div class="top"><span class="tag cap">02</span></div><div><h3 data-i18n="f2h">COLOR knob</h3><p data-i18n="f2p">From clean triads to sevenths, extensions and altered chords — the harmony stays correct.</p></div></div>
+      <div class="card tile light"><div class="top"><span class="tag cap">03</span></div><div><h3 data-i18n="f3h">Arps & groove</h3><p data-i18n="f3p">24 arpeggio patterns, 17 chord rhythms, strum, swing and humanize.</p></div></div>
+      <div class="card tile studio"><div class="top"><span class="tag cap">04</span></div><div><h3 data-i18n="f4h">NEW MELODY + drag to FL</h3><p data-i18n="f4p">One click writes a melody in your key that fits the chords, in 4 styles: Hook, Smooth, Flow and Simple. Then drag chords, bass/808 or melody as MIDI.</p></div></div>
+      <div class="card tile light"><div class="top"><span class="tag cap">05</span></div><div><h3 data-i18n="f5h">Voice leading</h3><p data-i18n="f5p">Chords connect with the smallest movement, or pick the inversion yourself. Sounds like a keys player.</p></div></div>
+      <div class="card tile black"><div class="top"><span class="tag cap">06</span></div><div><h3 data-i18n="f6h">8 sounds included</h3><p data-i18n="f6p">Real grand piano, Rhodes, warm pad, supersaw, pluck, synth keys, bells and organ.</p></div></div>
+    </div>
+
+    <div class="steps">
+      <div class="step"><span class="n">01</span><h3 data-i18n="s1h">Pick genre & mood</h3><p data-i18n="s1p">Choose the subgenre, the key and minor or major. Turn MOOD to change the vibe.</p></div>
+      <div class="step"><span class="n">02</span><h3 data-i18n="s2h">Play & listen</h3><p data-i18n="s2p">Play a note on your MIDI keyboard and NOCTIS answers in that key. Hit NEW VARIATION for more.</p></div>
+      <div class="step"><span class="n">03</span><h3 data-i18n="s3h">Drag the MIDI</h3><p data-i18n="s3p">Take chords, bass or melody into FL Studio. Hold Alt when dropping to keep what you already have.</p></div>
+    </div>
+
+    <div class="genre-groups">
+      <div class="genre-group"><h4 class="cap" data-i18n="gg1">Reggaeton</h4><div class="chips"><span data-i18n="g1">Romantic</span><span>Perreo</span><span>Reggaeton Pop</span><span>Neoperreo</span><span>Trapetón</span><span>Reggaeton R&amp;B</span><span data-i18n="g7">Classic Reggaeton</span><span data-i18n="g8">Alternative Reggaeton</span></div></div>
+      <div class="genre-group"><h4 class="cap">Afro</h4><div class="chips"><span>Afrobeat</span><span>Afro-pop</span><span>Afro-swing</span><span>Amapiano</span></div></div>
+      <div class="genre-group"><h4 class="cap">Trap</h4><div class="chips"><span>Trap</span><span>Dark Trap</span><span>Melodic Trap</span></div></div>
+      <div class="genre-group"><h4 class="cap">Drill</h4><div class="chips"><span>UK Drill</span><span>NY Drill</span><span>Sexy Drill</span><span>Melodic Drill</span></div></div>
+      <div class="genre-group"><h4 class="cap">Sad / Emo</h4><div class="chips"><span>Sad Beat</span><span>Emo Beat</span><span>Melodic Beat</span></div></div>
+      <div class="genre-group"><h4 class="cap">R&amp;B / Smooth</h4><div class="chips"><span>Smooth R&amp;B</span><span>Late Night</span><span>Soul</span></div></div>
+    </div>
+
+    <div class="buy" id="noctis-buy">
+      <div class="card studio art">
+        <span class="tag cap">NOCTIS 1.0 · VST3 · CLAP · AU</span>
+        <img src="img/noctis-robot.png" alt="" loading="lazy">
+      </div>
+      <div class="card price-box">
+        <p class="kicker cap" data-i18n="buy_k">Launch price</p>
+        <div class="big"><span data-price="noctis">US$20</span><span class="old" data-oldprice="noctis"></span></div>
+        <p style="color:var(--soft);margin-top:8px" data-i18n="once">One-time payment · no subscription</p>
+        <ul class="incl">
+          <li data-i18n="i1">Windows: VST3, CLAP and standalone app</li>
+          <li data-i18n="i2">Mac included: VST3, AU, CLAP and MIDI FX for Logic</li>
+          <li data-i18n="i3">License for 1 computer (move it whenever you switch computers)</li>
+          <li data-i18n="i4">Free updates with new genres</li>
+          <li data-i18n="i5">Bilingual installer + PDF manual (EN/ES)</li>
+        </ul>
+        <a href="#" class="btn btn-org if-av" style="width:100%;margin-top:auto" data-buy="noctis" data-i18n="buy_btn">Buy now</a>
+        <a href="#" class="btn btn-org if-soon" style="width:100%;margin-top:auto" data-notify="noctis" data-i18n="soon_btn">Notify me when it's out</a>
+        <p class="pay if-soon" data-i18n="soon_pay">Coming soon. Write to us and we'll let you know by email on launch day.</p>
+        <p class="pay if-av" data-i18n="pay">Secure card payment · processed by Polar · your license key arrives by email instantly.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= REESFLOW ======================= -->
+<section id="reesflow" style="padding-top:10px">
+  <div class="wrap">
+    <div class="card rf">
+      <div>
+        <p class="kicker cap" data-i18n="r_k">Coming soon · Bass synth</p>
+        <h2>ReesFlow</h2>
+        <p class="sub" style="margin-top:12px" data-i18n="r_s">The bass plugin for urban producers. Every bass you need in one place, so you don't have to dig through other plugins.</p>
+        <ul>
+          <li data-i18n="r1">Reese, Reggaeton, Afrobeat and House basses</li>
+          <li data-i18n="r2">Built on real bass sounds shaped over years of production</li>
+          <li data-i18n="r3">Ready-to-use presets for every genre</li>
+          <li data-i18n="r4">Same license and store as NOCTIS</li>
+        </ul>
+        <a href="#" class="btn btn-white" data-notify="reesflow" data-i18n="r_btn">Notify me when it's out</a>
+      </div>
+      <div>
+        <div class="scr">
+          <div class="top cap"><span>ReesFlow · Reese 01</span><span>Detune 18</span></div>
+          <b>F#1 <span style="font-weight:500;opacity:.55">Reese · Sub</span></b>
+          <div id="rfWave"></div>
+          <div class="top cap" style="margin-top:8px"><span>Reggaeton · Dark</span><span>Glide on</span></div>
+        </div>
+        <div class="chips"><span>Reese</span><span>Reggaeton</span><span>Afrobeat</span><span>House</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= SOPORTE ======================= -->
+<section id="support">
+  <div class="wrap">
+    <div class="head" style="justify-content:center;text-align:center">
+      <div>
+        <p class="kicker cap" data-i18n="faq_k">Support</p>
+        <h2 data-i18n="faq_h">Before and <span class="dim">after you buy.</span></h2>
+      </div>
+    </div>
+    <div class="faq">
+      <details><summary data-i18n="q1">Do the plugins work in FL Studio?</summary><p data-i18n="a1">Yes. NOCTIS comes as VST3 and CLAP, so it works in FL Studio and in any DAW that supports them (Ableton, Reaper, Studio One, Cubase, Bitwig…).</p></details>
+      <details><summary data-i18n="q2">Do they work on Mac?</summary><p data-i18n="a2">Yes. The Mac installer includes VST3, AU (Logic and GarageBand), CLAP and a MIDI FX for Logic. It isn't signed by Apple yet, so the first time right-click the installer and choose Open.</p></details>
+      <details><summary data-i18n="q3">How do I activate my license?</summary><p data-i18n="a3">After buying you get an email with your key. Open the plugin, press PASTE and ACTIVATE. After that it works offline: it checks your license about once a week when you're online, and keeps working up to 60 days without internet.</p></details>
+      <details><summary data-i18n="q4">On how many computers can I use it?</summary><p data-i18n="a4">Each license works on 1 computer. If you switch computers, press “Release this PC” on the old one and activate it on the new one. If your computer broke, write to us.</p></details>
+      <details><summary data-i18n="q5">Can I try it first?</summary><p data-i18n="a5">The plugins need a license to work. Watch them in action on our YouTube channel before buying.</p></details>
+      <details><summary data-i18n="q6">Can I use what I make in songs I sell?</summary><p data-i18n="a6">Yes, 100% royalty-free. What you create with FlowEazy plugins is yours.</p></details>
+    </div>
+    <div class="card contact orange">
+      <div><b data-i18n="c_h">Need help?</b><p data-i18n="c_p">Lost key, change of computer or any question — write to us.</p></div>
+      <a class="btn btn-white btn-sm" id="supportMail" href="#">contact@gianbeatmusic.com</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© <span id="y">2026</span> <b class="o" style="color:var(--ink)">floweazy</b> · by GIANBEAT MUSIC</span>
+    <span><a href="https://youtube.com/@gianbeatofficial">YouTube</a> · <a id="footMail" href="#">contact@gianbeatmusic.com</a></span>
+  </div>
+</footer>
+
+<script>
+/* =====================================================================
+   CONFIGURACIÓN — edita solo esta parte
+   ---------------------------------------------------------------------
+   • checkout: pega el link de compra de Polar de cada plugin.
+   • status:  "available" (a la venta) o "soon" (próximamente).
+   • Para agregar un plugin nuevo: copia un bloque { ... } y cámbialo.
+   ===================================================================== */
+const SUPPORT_EMAIL = "contact@gianbeatmusic.com";
+
+const PLUGINS = [
+  {
+    id: "noctis",
+    name: "NOCTIS",
+    status: "soon",               // ← cámbialo a "available" el día que salga a la venta
+    price: "US$20",
+    oldPrice: "",                 // precio tachado (vacío = no se muestra)
+    checkout: "",                 // ← link de compra de Polar
+    image: "img/noctis-plugin.jpg",
+    more: "#noctis",
+    type: { en: "Chords & arpeggios", es: "Acordes y arpegios" },
+    desc: {
+      en: "Play one note and get progressions, arps, bass and melodies for 6 urban genres.",
+      es: "Toca una nota y obtén progresiones, arpegios, bajos y melodías para 6 géneros urbanos."
+    }
+  },
+  {
+    id: "reesflow",
+    name: "ReesFlow",
+    status: "soon",
+    price: "",
+    oldPrice: "",
+    checkout: "",
+    image: "",                    // vacío = fondo morado con onda de bajo
+    more: "#reesflow",
+    type: { en: "Bass synth", es: "Synth de bajos" },
+    desc: {
+      en: "Reese, Reggaeton, Afrobeat and House basses built from real studio sounds.",
+      es: "Bajos Reese, Reggaetón, Afrobeat y House hechos con sonidos reales de estudio."
+    }
+  }
+  // , { id:"nuevo", name:"Nombre", status:"soon", ... }   ← así agregas el siguiente
+];
+
+/* ===================== Textos en español ===================== */
+const ES = {
+  nav_plugins:"Plugins", nav_support:"Soporte", nav_buy:"Comprar NOCTIS", nav_soon:"NOCTIS · Muy pronto",
+  h1:'No sueltes<br><em>el beat.</em>',
+  lead:"¿Te trabaste buscando la melodía? Nuestros plugins te dan la idea, te muestran cómo funciona y te ayudan a armar beats que suenan pro.",
+  go:"Ver los plugins",
+  mid_h:"Te damos la idea.<br>Tú haces el beat.", mid_s:"NOCTIS · acordes y arpegios · US$20", mid_s2:"NOCTIS · acordes y arpegios · muy pronto",
+  soon:"Próximamente", bass:"Synth de bajos",
+  st1_t:"Progresiones", st1_p:"progresiones base para arrancar tu próximo beat",
+  st2_t:"Presets", st2_p:"presets con su propio ritmo y arpegio, listos para usar",
+  msg:"Arma tus beats como pro", stem:"Tu copiloto<br>en el estudio",
+  why_h:'Encuentra la melodía <em>que buscabas.</em>',
+  why_p:"Trabarte es parte del camino, no el final. Cada progresión te muestra sus acordes, notas y grados (i – VI – III – VII), así aprendes la teoría sobre la marcha, hasta que armes tus beats por tu cuenta.",
+  why_b1:"Quiero NOCTIS", why_b2:"Avísame", l1i:"/Pronto",
+  l1:"Acordes, arpegios, bajos y melodías", l2:"Bajos reese, reggaetón, afro y house", l2i:"/Pronto",
+  l3:"Más plugins", l3s:"Nuevas herramientas en camino", l3i:"/Lo próximo",
+  cat_k:"La tienda", cat_h:'Plugins <span class="dim">y lo que viene.</span>',
+  cat_s:"Pago único, tu licencia al correo al instante y actualizaciones gratis.",
+  n_k:"Generador de acordes y arpegios", n_buy_top:"Comprar NOCTIS", n_notify_top:"Avísame cuando salga",
+  n_s:"Toca una nota y NOCTIS te da progresiones, arpegios, bajos y melodías listos para usar. Arrastra el MIDI a tu Piano Roll y sigue creando.",
+  f1h:"NUEVA VARIANTE", f1p:"Un clic y NOCTIS escribe una progresión nueva que encaja con el género, la tonalidad y el mood que elegiste.",
+  f2h:"Perilla COLOR", f2p:"De tríadas limpias a séptimas, extensiones y acordes alterados, sin perder la armonía correcta.",
+  f3h:"Arpegios y groove", f3p:"24 patrones de arpegio, 17 ritmos de acordes, strum, swing y humanización.",
+  f4h:"NUEVA MELODÍA + arrastrar a FL", f4p:"Un clic crea una melodía en tu tonalidad que encaja con los acordes, en 4 estilos: Hook, Smooth, Flow y Simple. Luego arrastras acordes, bajo/808 o melodía como MIDI.",
+  f5h:"Voice leading", f5p:"Los acordes se conectan con el menor movimiento, o eliges tú la inversión. Suena como un tecladista.",
+  f6h:"8 sonidos incluidos", f6p:"Piano de cola real, Rhodes, pad cálido, supersaw, pluck, synth keys, campanas y órgano.",
+  s1h:"Elige género y mood", s1p:"Selecciona el subgénero, la nota y si es menor o mayor. Gira MOOD para cambiar la intención.",
+  s2h:"Toca y escucha", s2p:"Toca una nota en tu teclado MIDI y NOCTIS responde en esa tonalidad. Pulsa NUEVA VARIANTE para más.",
+  s3h:"Arrastra el MIDI", s3p:"Lleva acordes, bajo o melodía a FL Studio. Mantén Alt al soltar para no borrar lo que ya tienes.",
+  gg1:"Reggaetón", g1:"Romántico", g7:"Reggaetón Clásico", g8:"Reggaetón Alternativo",
+  buy_k:"Precio de lanzamiento", once:"Pago único · sin suscripción",
+  i1:"Windows: VST3, CLAP y app independiente", i2:"Mac incluido: VST3, AU, CLAP y MIDI FX para Logic",
+  i3:"Licencia para 1 computadora (la mueves cuando cambies de PC)", i4:"Actualizaciones gratis con nuevos géneros",
+  i5:"Instalador bilingüe + manual PDF (ES/EN)",
+  buy_btn:"Comprar ahora", soon_btn:"Avísame cuando salga", soon_pay:"Muy pronto. Escríbenos y te avisamos por correo el día del lanzamiento.", pay:"Pago seguro con tarjeta · procesado por Polar · tu código de licencia llega a tu correo al instante.",
+  r_k:"Próximamente · Synth de bajos",
+  r_s:"El plugin de bajos para productores urbanos. Todos los bajos que necesitas en un solo lugar, sin buscar otros plugins.",
+  r1:"Bajos Reese, Reggaetón, Afrobeat y House", r2:"Hecho con sonidos de bajo reales, trabajados durante años de producción",
+  r3:"Presets listos para usar en cada género", r4:"Misma licencia y misma tienda que NOCTIS",
+  r_btn:"Avísame cuando salga",
+  faq_k:"Soporte", faq_h:'Antes y <span class="dim">después de comprar.</span>',
+  q1:"¿Los plugins funcionan en FL Studio?", a1:"Sí. NOCTIS viene en VST3 y CLAP, así que funciona en FL Studio y en cualquier DAW que los acepte (Ableton, Reaper, Studio One, Cubase, Bitwig…).",
+  q2:"¿Funcionan en Mac?", a2:"Sí. El instalador para Mac trae VST3, AU (Logic y GarageBand), CLAP y un MIDI FX para Logic. Aún no está firmado por Apple, así que la primera vez ábrelo con clic derecho > Abrir.",
+  q3:"¿Cómo activo mi licencia?", a3:"Después de comprar te llega un correo con tu código. Abres el plugin, pulsas PEGAR y ACTIVAR. Luego funciona sin conexión: revisa tu licencia más o menos una vez por semana cuando tienes internet y sigue funcionando hasta 60 días sin conectarte.",
+  q4:"¿En cuántas computadoras puedo usarlo?", a4:"Cada licencia funciona en 1 computadora. Si cambias de PC, pulsa “Liberar esta PC” en la antigua y actívalo en la nueva. Si tu PC se malogró, escríbenos.",
+  q5:"¿Puedo probarlo antes?", a5:"Los plugins necesitan licencia para funcionar. Míralos en acción en nuestro canal de YouTube antes de comprar.",
+  q6:"¿Puedo usar lo que haga en canciones que venda?", a6:"Sí, 100% libre de regalías. Lo que crees con los plugins de FlowEazy es tuyo.",
+  c_h:"¿Necesitas ayuda?", c_p:"Código perdido, cambio de PC o cualquier duda: escríbenos."
+};
+
+/* Textos fijos del catálogo */
+const UI = {
+  en:{ available:"Available", soon:"Coming soon", more:"See more", buy:"Buy", notify:"Notify me", next_h:"More plugins on the way", next_p:"New tools for urban producers are in the works. Follow us on YouTube so you don't miss them.", next_tab:"Next", yt:"YouTube", soonAlert:"Coming soon" },
+  es:{ available:"Disponible", soon:"Próximamente", more:"Ver más", buy:"Comprar", notify:"Avísame", next_h:"Más plugins en camino", next_p:"Estamos preparando nuevas herramientas para productores urbanos. Síguenos en YouTube para no perdértelas.", next_tab:"Lo próximo", yt:"YouTube", soonAlert:"Muy pronto" }
+};
+
+/* ===================== Onda de bajo (dos sierras desafinadas) ===================== */
+function waveSVG(c1, c2){
+  const W = 300, H = 90, mid = H/2;
+  const saw = (period, phase, amp) => {
+    let d = "";
+    for (let x = 0; x <= W; x += 1.5){
+      const t = ((x/period + phase) % 1);
+      d += (x === 0 ? "M" : "L") + x.toFixed(1) + " " + (mid - (t - .5) * 2 * amp).toFixed(1) + " ";
+    }
+    return d;
+  };
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">
+    <line x1="0" y1="${mid}" x2="${W}" y2="${mid}" stroke="#fff" stroke-opacity=".15"/>
+    <path d="${saw(46,0,32)}" fill="none" stroke="${c1}" stroke-width="2" stroke-linejoin="round"/>
+    <path d="${saw(49,.35,27)}" fill="none" stroke="${c2}" stroke-width="2" stroke-linejoin="round" opacity=".9"/>
+  </svg>`;
+}
+
+/* ===================== Catálogo ===================== */
+let LANG = "en";
+function renderCatalog(){
+  const t = UI[LANG];
+  const html = PLUGINS.map(p => {
+    const ok = p.status === "available";
+    const pic = p.image
+      ? `<div class="pic"><img src="${p.image}" alt="${p.name}" loading="lazy"></div>`
+      : `<div class="pic cool">${waveSVG("#f7761f", "#ffffff")}</div>`;
+    const left = ok && p.price ? `<span class="price">${p.price}</span>` : `<a href="${p.more}" class="btn btn-soft btn-sm">${t.more}</a>`;
+    const acts = ok
+      ? `<a href="${p.more}" class="btn btn-soft btn-sm">${t.more}</a><a href="#" class="btn btn-org btn-sm" data-buy="${p.id}">${t.buy}</a>`
+      : `<a href="#" class="btn btn-solid btn-sm" data-notify="${p.id}">${t.notify}</a>`;
+    return `<article class="card prod">
+      ${pic}
+      <div class="panel">
+        <div class="row"><span class="state cap ${ok ? "ok" : ""}"><i></i>${ok ? t.available : t.soon}</span><span class="type cap">${p.type[LANG]}</span></div>
+        <h3>${p.name}</h3>
+        <p>${p.desc[LANG]}</p>
+        <div class="foot">${left}<span class="acts">${acts}</span></div>
+      </div>
+    </article>`;
+  }).join("") + `
+    <article class="card prod">
+      <div class="pic empty"><b>+</b></div>
+      <div class="panel">
+        <div class="row"><span class="state cap"><i></i>${t.next_tab}</span></div>
+        <h3 style="font-size:24px">${t.next_h}</h3>
+        <p>${t.next_p}</p>
+        <div class="foot"><span></span><a href="https://youtube.com/@gianbeatofficial" class="btn btn-solid btn-sm">${t.yt}</a></div>
+      </div>
+    </article>`;
+  document.getElementById("catalog").innerHTML = html;
+  wireButtons();
+}
+
+/* ===================== Botones de compra / avísame ===================== */
+function wireButtons(){
+  document.querySelectorAll("[data-buy]").forEach(a => {
+    const p = PLUGINS.find(x => x.id === a.dataset.buy);
+    if (p && p.checkout){ a.href = p.checkout; a.onclick = null; }
+    else a.onclick = e => { e.preventDefault(); alert(UI[LANG].soonAlert); };
+  });
+  document.querySelectorAll("[data-notify]").forEach(a => {
+    const p = PLUGINS.find(x => x.id === a.dataset.notify);
+    const subject = encodeURIComponent((p ? p.name : "FlowEazy") + (LANG === "es" ? " – Avísame cuando salga" : " – Notify me"));
+    a.href = `mailto:${SUPPORT_EMAIL}?subject=${subject}`;
+  });
+}
+
+/* ===================== Idioma ===================== */
+const EN = {};
+document.querySelectorAll("[data-i18n]").forEach(el => EN[el.dataset.i18n] = el.innerHTML);
+function setLang(lang){
+  LANG = lang;
+  const dict = lang === "es" ? ES : EN;
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const v = dict[el.dataset.i18n];
+    if (v !== undefined) el.innerHTML = v;
+  });
+  document.documentElement.lang = lang;
+  document.querySelectorAll(".lang button").forEach(b => b.classList.toggle("on", b.dataset.lang === lang));
+  try { localStorage.setItem("floweazy-lang", lang); } catch(e) {}
+  renderCatalog();
+}
+document.querySelectorAll(".lang button").forEach(b => b.addEventListener("click", () => setLang(b.dataset.lang)));
+
+/* ===================== Modo claro / oscuro ===================== */
+document.getElementById("themeBtn").addEventListener("click", () => {
+  const next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", next);
+  try { localStorage.setItem("floweazy-theme", next); } catch(e) {}
+});
+
+/* ===================== Menú en celular ===================== */
+const links = document.getElementById("links");
+document.getElementById("burger").addEventListener("click", () => links.classList.toggle("open"));
+links.querySelectorAll("a").forEach(a => a.addEventListener("click", () => links.classList.remove("open")));
+
+/* ===================== Arranque ===================== */
+document.getElementById("posterWave").innerHTML = waveSVG("#f7761f", "#ffffff");
+document.getElementById("rfWave").innerHTML = waveSVG("#f7761f", "#c9b8ff");
+
+const noctis = PLUGINS.find(p => p.id === "noctis");
+document.documentElement.setAttribute("data-noctis", noctis.status === "available" ? "available" : "soon");
+document.querySelectorAll('[data-price="noctis"]').forEach(el => el.textContent = noctis.price);
+document.querySelectorAll('[data-oldprice="noctis"]').forEach(el => noctis.oldPrice ? el.textContent = noctis.oldPrice : el.remove());
+["supportMail","footMail"].forEach(id => document.getElementById(id).href = "mailto:" + SUPPORT_EMAIL);
+document.getElementById("y").textContent = new Date().getFullYear();
+
+let saved = null;
+try { saved = localStorage.getItem("floweazy-lang"); } catch(e) {}
+setLang(saved || ((navigator.language || "en").toLowerCase().startsWith("es") ? "es" : "en"));
+</script>
+</body>
+</html>

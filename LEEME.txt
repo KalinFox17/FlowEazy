@@ -1,0 +1,38 @@
+FLOWEAZY · tienda de plugins de GIANBEAT MUSIC
+==============================================
+
+QUÉ HAY EN ESTA CARPETA
+  index.html           la página completa (una sola página)
+  img\                 imágenes (logo FlowEazy, NOCTIS y robot)
+  CNAME                le dice a GitHub que la dirección es floweazy.gianbeatmusic.com
+  _para noctis-web\    redirección para tu página vieja de NOCTIS (ver paso 5)
+
+CÓMO EDITAR (abre index.html con el Bloc de notas o VS Code)
+  Busca "CONFIGURACIÓN" casi al final del archivo:
+  • checkout: "" -> pega entre las comillas el link de compra de Polar de NOCTIS.
+  • price: "US$20" -> cambia el precio si lo subes o bajas.
+  • status: "soon" -> cuando ReesFlow salga a la venta, cámbialo a "available"
+    y pon su precio y su link de Polar.
+  • Plugin nuevo: copia un bloque { ... } de la lista PLUGINS y cambia los datos.
+
+PUBLICARLA (gratis, igual que hiciste con NOCTIS)
+  1. GitHub Desktop > File > Add local repository > elige esta carpeta
+     (D:\Claude Archivos\FlowEazy). Si te dice que no es repositorio, pulsa
+     "create a repository". Luego "Publish repository" (puede ser público).
+  2. En github.com, abre el repositorio > Settings > Pages >
+     Source: "Deploy from a branch" > rama main, carpeta / (root) > Save.
+  3. En GoDaddy > gianbeatmusic.com > DNS > Agregar registro:
+       Tipo: CNAME   Nombre: floweazy   Valor: KalinFox17.github.io
+  4. Espera unos minutos, vuelve a Settings > Pages, confirma que el dominio
+     dice floweazy.gianbeatmusic.com y marca "Enforce HTTPS".
+  5. Cuando FlowEazy ya abra bien: en la carpeta NOCTIS\noctis-web reemplaza
+     index.html por el que está en "_para noctis-web" y súbelo con GitHub Desktop.
+     Así noctis.gianbeatmusic.com llevará directo a NOCTIS dentro de FlowEazy.
+     (Deja el archivo CNAME de noctis-web como está.)
+
+FUENTE DEL LOGOTIPO
+  El nombre "floweazy" y el logo del menú usan Outfit ExtraBold (carpeta fonts\).
+  Es gratis con licencia SIL Open Font License: sirve para web, logo y merch.
+  La licencia está en fonts\Outfit-OFL-LICENSE.txt.
+  El archivo CodeNext-ExtraBold.otf es la versión Trial (solo uso personal):
+  bórralo; el archivo .gitignore evita que se suba a GitHub mientras tanto.
